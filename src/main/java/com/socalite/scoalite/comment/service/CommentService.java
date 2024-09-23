@@ -76,9 +76,6 @@ public class CommentService {
         comment.setCommentedAt(LocalDateTime.now());
         comment.setPost(postRef);
 
-        var postStats = postRef.getStats();
-        postStats.setCommentsCount(postStats.getCommentsCount() + 1);
-
         var commentId = commentRepo.save(comment).getId();
         postService.incrementCommentCount(postRef);
         return RegisterCommentResponseDTO.success(commentId);

@@ -63,27 +63,29 @@ public class ReactionService {
         if (reactionOptional.isPresent()) {
             var reaction = reactionOptional.get();
             if (reaction.getType() != reactionDTO.getReactionType()) {
-                reaction.setType(reactionDTO.getReactionType());
-                reactionRepo.save(reaction);
 
                 postService.decrementReactionCount(postRef, reaction.getType());
                 postService.incrementReactionCount(postRef, reactionDTO.getReactionType());
+
+                reaction.setType(reactionDTO.getReactionType());
+                reactionRepo.save(reaction);
                 return CaptureReactionDTO.modified(postId, reaction.getType());
             } else {
-                reactionRepo.deleteById(reactionId);
-
                 postService.decrementReactionCount(postRef, reaction.getType());
+                reactionRepo.deleteById(reactionId);
                 return CaptureReactionDTO.removed(postId, reaction.getType());
             }
         } else {
+            var reactionToCapture = reactionDTO.getReactionType();
             var reaction = new Reaction()
-                    .setType(reactionDTO.getReactionType())
+                    .setType(reactionToCapture)
                     .setPost(postRef)
                     .setOwner(userRefOptional.get())
                     .setReactionId(new ReactionId().setPostId(postId).setUserId(userId));
 
+            postService.incrementReactionCount(postRef, reactionToCapture);
             var reactionType = reactionRepo.save(reaction).getType();
-            postService.incrementReactionCount(postRef, reactionType);
+
             return CaptureReactionDTO.captured(postId, reactionType);
         }
     }

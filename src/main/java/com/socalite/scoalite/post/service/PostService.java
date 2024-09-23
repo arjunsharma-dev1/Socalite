@@ -1,5 +1,7 @@
 package com.socalite.scoalite.post.service;
 
+import com.socalite.scoalite.post.model.ReactionCounts;
+import com.socalite.scoalite.post.repo.PostStatsRepo;
 import com.socalite.scoalite.reaction.model.ReactionType;
 import com.socalite.scoalite.utils.Multi;
 import com.socalite.scoalite.utils.PageUtils;
@@ -42,6 +44,9 @@ public class PostService {
     private PostRepo postRepo;
 
     @Autowired
+    private PostStatsRepo postStatsRepo;
+
+    @Autowired
     private ApplicationContext applicationContext;
 
     @PersistenceContext
@@ -82,7 +87,7 @@ public class PostService {
 
         var postStats = new PostStats();
         postStats.setCommentsCount(0);
-        postStats.setReactionCounts(new TreeSet<>());
+//        postStats.setReactionCounts(new ReactionCounts());
         postStats.setPost(post);
 
         post.setStats(postStats);
@@ -102,23 +107,25 @@ public class PostService {
         var postStats = postRef.getStats();
         var incrementCommentCount = postStats.getCommentsCount() + 1;
         postStats.setCommentsCount(incrementCommentCount);
-        postRepo.save(postRef);
+        postStatsRepo.save(postStats);
         return incrementCommentCount;
     }
 
     public long decrementCommentCount(Post postRef) {
         var postStats = postRef.getStats();
-        var incrementCommentCount = postStats.getCommentsCount() - 1;
-        postStats.setCommentsCount(incrementCommentCount);
-        postRepo.save(postRef);
-        return incrementCommentCount;
+        var decrementCommentCount = postStats.getCommentsCount() - 1;
+        postStats.setCommentsCount(decrementCommentCount);
+        postStatsRepo.save(postStats);
+        return decrementCommentCount;
     }
 
     public void incrementReactionCount(Post postRef, ReactionType reactionType) {
         postRef.getStats().incrementReactionCount(reactionType);
+        postStatsRepo.save(postRef.getStats());
     }
 
     public void decrementReactionCount(Post postRef, ReactionType type) {
         postRef.getStats().decrementReactionCount(type);
+        postStatsRepo.save(postRef.getStats());
     }
 }

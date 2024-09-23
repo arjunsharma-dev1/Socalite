@@ -23,7 +23,7 @@ public class ReactionController {
                                                     @RequestBody ReactionDTO reactionDTO) {
         var captureReactionDTO = reactionService.react(userId, reactionDTO);
         return switch (captureReactionDTO.getCaptureReactionType()) {
-            case CAPTURED, REMOVED -> ResponseEntity.ok(captureReactionDTO);
+            case CAPTURED, REMOVED, MODIFIED -> ResponseEntity.ok(captureReactionDTO);
             default -> ResponseEntity.badRequest().body(captureReactionDTO);
         };
     }

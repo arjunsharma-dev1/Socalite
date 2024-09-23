@@ -36,9 +36,10 @@ public class Post {
 
     @Nonnull
     @Column
-    private LocalDateTime postedAt = LocalDateTime.now();;
+    private LocalDateTime postedAt = LocalDateTime.now();
 
-    @OneToOne(mappedBy = "post", cascade = CascadeType.ALL)
+    @OneToOne(cascade = CascadeType.ALL)
+//    @JoinColumn(foreignKey = @ForeignKey(name = "post_stats_fk"))
     private PostStats stats = new PostStats();
 
     @Nonnull

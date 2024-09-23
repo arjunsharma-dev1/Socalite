@@ -6,7 +6,6 @@ import com.socalite.scoalite.comment.CommentRequestDTO;
 import com.socalite.scoalite.reaction.controller.ReactionDTO;
 import com.socalite.scoalite.user.dto.RegisterUserRequestDTO;
 import io.restassured.RestAssured;
-import io.restassured.http.ContentType;
 import io.restassured.response.ValidatableResponse;
 import io.restassured.specification.RequestSpecification;
 
@@ -37,13 +36,6 @@ public interface TestUtils {
 
     static ValidatableResponse registerUser(RequestSpecification requestSpecification,
                                             RegisterUserRequestDTO registerUserRequestDTO) {
-//        given:
-//            header
-//            body
-//        when:
-//            url
-//        then:
-//            response extraction/validation
         return RestAssured.given(requestSpecification)
                 .body(String.format("""
 						{
@@ -62,7 +54,7 @@ public interface TestUtils {
                         registerUserRequestDTO.getEmailAddress(),
                         registerUserRequestDTO.getPhoneNumber()))
                 .when()
-                    .get(URI.create("users"))
+                    .post(URI.create("users"))
                 .then();
     }
 
@@ -159,5 +151,15 @@ public interface TestUtils {
                     .put(URI.create("comments"))
                 .then();
 
+    }
+
+    static ValidatableResponse getPosts(RequestSpecification requestSpecification, long userId) {
+        return RestAssured
+                .given(requestSpecification)
+                    .header("X_LOGIN", userId)
+                    .queryParam("connectedUserId", userId)
+                .when()
+                    .get(URI.create("posts"))
+                .then();
     }
 }

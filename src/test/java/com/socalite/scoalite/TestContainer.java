@@ -41,6 +41,8 @@ public class TestContainer {
         dynamicPropertyRegistry.add("spring.datasource.username", postgresContainer::getUsername);
         dynamicPropertyRegistry.add("spring.datasource.password", postgresContainer::getPassword);
         dynamicPropertyRegistry.add("spring.datasource.driver-class-name", postgresContainer::getDriverClassName);
+        dynamicPropertyRegistry.add("spring.jpa.hibernate.ddl-auto", () -> "none");
+
 
         dynamicPropertyRegistry.add("spring.flyway.url", postgresContainer::getJdbcUrl);
         dynamicPropertyRegistry.add("spring.flyway.user", postgresContainer::getUsername);

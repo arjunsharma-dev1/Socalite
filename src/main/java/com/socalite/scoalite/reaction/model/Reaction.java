@@ -48,9 +48,4 @@ public class Reaction {
     @MapsId("userId")
     @JoinColumn(name = "user_id", referencedColumnName = "id", nullable = false, foreignKey = @ForeignKey(name = "reaction_user_fk"))
     private User owner;
-
-    @PostPersist
-    public void postPersist() {
-
-    }
 }

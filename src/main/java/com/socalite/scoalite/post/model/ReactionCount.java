@@ -6,17 +6,26 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
+import java.util.Objects;
+
 @Getter
 @Setter
 @Accessors(chain = true)
-@Entity
 public class ReactionCount {
-    @EmbeddedId
-    private ReactionId id;
-    @Column
+    private ReactionType reactionType;
     private long count;
-    @ManyToOne
-    @JoinColumn(foreignKey = @ForeignKey(name = "post_stats_reaction_reaction_count_fk"))
-    private PostStats postStats;
+
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof ReactionCount rc)) {
+            return false;
+        }
+        return Objects.equals(this.reactionType,rc.reactionType);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(this.reactionType);
+    }
 }
 

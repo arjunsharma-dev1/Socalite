@@ -25,9 +25,10 @@ public class PostToAllPostEntry implements ToDTOConverter<Post, AllPostEntry> {
 
         var reactionCounts =
                 input.getStats().getReactionCounts()
+                        .getReactionCounts()
                         .stream()
                         .map(reactionCount -> new AbstractMap.SimpleImmutableEntry<>(
-                                reactionCount.getId().getReactionType(),
+                                reactionCount.getReactionType(),
                                 reactionCount.getCount()
                         ))
                         .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (first, second) -> first));

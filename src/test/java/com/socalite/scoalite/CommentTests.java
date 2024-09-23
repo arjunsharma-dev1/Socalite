@@ -13,8 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.Objects;
 
 import static com.socalite.scoalite.TestUtils.*;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
 
 @Log4j2
 public class CommentTests extends TestContainer {
@@ -51,13 +50,16 @@ public class CommentTests extends TestContainer {
                         .extract()
                         .as(JsonNode.class)
                         .path("userId")
-                        .asLong();
+                        .asInt();
+
+        var postContent = "Second Post For Comment Testing";
+
         var postId =
-                registerPost(requestSpecification, userId, "Second Post For Comment Testing")
+                registerPost(requestSpecification, userId, postContent)
                         .extract()
                         .as(JsonNode.class)
                         .path("postId")
-                        .asLong();
+                        .asInt();
 
         var commentRequestDTO = new CommentRequestDTO().setContent("First Comment for Testing").setPostId(postId);
 
@@ -90,6 +92,21 @@ public class CommentTests extends TestContainer {
                 .body("content[1].content", equalTo("First Comment for Testing"))
                 .body("content[1].ownerId", equalTo(1))
                 .body("content[1].ownerName", equalTo("samplejunlast"));
+
+        TestUtils.getPosts(requestSpecification, userId)
+                .statusCode(HttpStatus.SC_OK)
+                .body("pageNumber", equalTo(1))
+                .body("pageSize", equalTo(10))
+                .body("totalElementsCount", equalTo(1))
+                .body("totalNumberOfPages", equalTo(1))
+                .body("empty", equalTo(false))
+                .body("content.size()", equalTo(1)) // Ensure content array has exactly one item
+                .body("content[0].id", equalTo(postId))
+                .body("content[0].content", equalTo(postContent))
+                .body("content[0].likesCount", anEmptyMap())
+                .body("content[0].commentsCount", equalTo(2))
+                .body("content[0].ownerId", equalTo(userId))
+                .body("content[0].userName", equalTo("samplejunlast"));
     }
 
     @Test
